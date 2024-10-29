@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy</title>
+    <style>
+        /* Root Styles */
+        :root {
+            --primary: #6366f1;
+            --secondary: #818cf8;
+            --accent: #f472b6;
+            --background: #030712;
+            --text: #f8fafc;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --gradient: linear-gradient(135deg, #6366f1, #f472b6);
+            --neon-shadow: 0 0 10px rgba(99, 102, 241, 0.5),
+                0 0 20px rgba(99, 102, 241, 0.3),
+                0 0 30px rgba(99, 102, 241, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .last-updated {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="container">
+        <h1>Privacy Policy</h1>
+
+        <div class="section">
+            <h2>Introduction</h2>
+            <p>Welcome to "Code Cerebrum" Privacy Policy. Your privacy is critically important to us. This Privacy Policy document outlines our practices regarding information collected through our application, including the use of third-party services such as Google AdMob and Google Analytics.</p>
+        </div>
+
+        <div class="section">
+            <h2>Information We Collect</h2>
+            <p>We do not collect personal identification information from our users. However, we may use third-party services that may collect information used to identify you:</p>
+            <ul>
+                <li>Usage data and analytics from Google Analytics</li>
+                <li>Cookies and tracking information from Google AdMob</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>How We Use Your Information</h2>
+            <p>The information collected by third-party services is used for various purposes:</p>
+            <ul>
+                <li>To analyze usage and improve our application</li>
+                <li>To serve ads relevant to your interests</li>
+                <li>To monitor and analyze the effectiveness of advertising campaigns</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Data Protection Rights</h2>
+            <p>Since we do not directly collect personal data, we recommend reviewing the privacy policies of third-party services like Google AdMob and Google Analytics for their data protection practices.</p>
+        </div>
+
+        <div class="section">
+            <h2>Contact Us</h2>
+            <p>If you have any questions about this Privacy Policy, please contact us:</p>
+            <ul>
+                <li>Email: codecerebrum@example.com</li>
+            </ul>
+        </div>
+
+        <p class="last-updated">Last updated: October 29, 2024</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS.load('particles-js', 'path/to/particles.json', function() {
+            console.log('particles.js loaded');
+        });
+    </script>
+</body>
+</html>
