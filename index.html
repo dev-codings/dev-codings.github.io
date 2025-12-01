@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Cerebrum</title>
+    <title>CodeCerebrum</title>
+
     <!-- Open Graph Meta Tags (for Facebook, LinkedIn, etc.) -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://codecerebrum.in">
@@ -17,857 +18,598 @@
     <meta name="twitter:title" content="Code Cerebrum">
     <meta name="twitter:description" content="Explore quiz and trivia apps">
     <meta name="twitter:image" content="https://codecerebrum.in/assets/meta/og_thumbnail.jpg">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
-
-    <!-- Monetag Ads -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="188580" async data-cfasync="false"></script>
-    <script>(function(s){s.dataset.zone='10245372',s.src='https://groleegni.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9', // Sky blue
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                            dark: '#0f172a', // Slate 900
+                            accent: '#6366f1', // Indigo
+                        }
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
         }
-        .parallax-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(255, 99, 71, 0.2), transparent 50%),
-                radial-gradient(circle at 80% 90%, rgba(60, 179, 113, 0.2), transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(72, 61, 139, 0.15), transparent 60%);
-            background-color: #f5f5fa;
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
         }
-        .parallax-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            transition: transform 0.5s ease-out;
-        }
-        #layer-1 {
-            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.3;
-        }
-        #three-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1;
-        }
-        .app-card {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-        .app-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(236, 72, 153, 0.5), 0 0 40px rgba(139, 92, 246, 0.4);
-        }
-        .tab-button {
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
-        .tab-button.active {
-            border-bottom-color: #ec4899;
-            color: #1a1a2e;
-            font-weight: 600;
-        }
-        .tab-button:hover:not(.active) {
-            border-bottom-color: rgba(236, 72, 153, 0.5);
-        }
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-        .tab-content.active {
-            display: grid;
-        }
-        .progress-bar {
-            height: 10px;
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
             border-radius: 5px;
-            background: #e5e7eb;
-            overflow: hidden;
         }
-        .progress-bar-fill {
-            height: 100%;
-            transition: width 1.5s ease-in-out;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
         }
-        .testimonial-card {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: transform 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .testimonial-card.active {
-            transform: scale(1);
-            opacity: 1;
-            box-shadow: 0 0 25px rgba(139, 92, 246, 0.5);
-        }
-        .testimonial-card:not(.active) {
-            transform: scale(0.9);
-            opacity: 0.6;
-        }
-        .testimonial-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #ec4899;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .testimonial-arrow:hover {
-            background: #db2777;
-        }
-        .testimonial-arrow.left {
-            left: 5px;
-        }
-        .testimonial-arrow.right {
-            right: 5px;
-        }
-        .cta-button {
-            transform: perspective(500px) translateZ(0);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .cta-button:hover {
-            transform: perspective(500px) translateZ(20px);
-            box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
-        }
-        .count-up {
-            font-size: 2rem sm;
-            font-size:2.5rem;
-            font-weight: 700;
-            color: #1a1a2e;
-        }
-        .navbar {
+        
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
             backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .form-input {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #e5e7eb;
-            transition: border-color 0.3s ease;
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(14, 165, 233, 0.3);
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.2);
         }
-        .form-input:focus {
-            border-color: #ec4899;
-            outline: none;
+
+        /* Text Gradient */
+        .text-gradient {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .hamburger {
-            display: none;
-        }
-        @media (max-width: 640px) {
-            .hamburger {
-                display: block;
-            }
-            .nav-links {
-                display: none;
-            }
-            .nav-links.active {
-                display: flex;
-                flex-direction: column;
-                position: absolute;
-                top: 64px;
-                left: 0;
-                width: 100%;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                padding: 1rem;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                z-index: 10;
-            }
-            .nav-links a {
-                padding: 0.5rem 0;
-                text-align: center;
-            }
-            .testimonial-arrow.left {
-                left: 5px;
-            }
-            .testimonial-arrow.right {
-                right: 5px;
-            }
-            .testimonial-card {
-                min-width: 100%;
-            }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="bg-[#f5f5fa] text-[#1a1a2e]">
+<body class="bg-brand-dark text-slate-300 font-sans selection:bg-brand-500 selection:text-white overflow-x-hidden">
 
-    <!-- Parallax Background -->
-    <div class="parallax-bg">
-        <div id="layer-1" class="parallax-layer"></div>
-    </div>
-    <canvas id="three-canvas"></canvas>
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-12">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-white tracking-tight font-mono">Code<span class="text-brand-500">Cerebrum</span></span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="#about" class="hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">About</a>
+                        <a href="#apps" class="hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium">Our Apps</a>
+                        <a href="#contact" class="bg-white/10 hover:bg-white/20 text-white px-5 py-2 rounded-full text-sm font-medium transition-all border border-white/10 backdrop-blur-sm">Contact Us</a>
+                    </div>
+                </div>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar fixed top-0 left-0 w-full z-20 py-4">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <a href="#" class="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">Code Cerebrum</a>
-            <button class="hamburger sm:hidden text-2xl text-gray-600 focus:outline-none">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="nav-links hidden sm:flex sm:space-x-4">
-                <a href="#home" class="text-base sm:text-lg hover:text-pink-500 transition">Home</a>
-                <a href="#about" class="text-base sm:text-lg hover:text-pink-500 transition">About</a>
-                <a href="#skills" class="text-base sm:text-lg hover:text-pink-500 transition">Skills</a>
-                <a href="#apps" class="text-base sm:text-lg hover:text-pink-500 transition">Apps</a>
-                <a href="#testimonials" class="text-base sm:text-lg hover:text-pink-500 transition">Testimonials</a>
-                <a href="#contact" class="text-base sm:text-lg hover:text-pink-500 transition">Contact</a>
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-white/10 focus:outline-none transition-all">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-white/5 absolute w-full">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium" onclick="toggleMobileMenu()">Home</a>
+                <a href="#about" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium" onclick="toggleMobileMenu()">About</a>
+                <a href="#apps" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium" onclick="toggleMobileMenu()">Apps</a>
+                <a href="#contact" class="text-brand-500 block px-3 py-2 rounded-md text-base font-medium font-bold" onclick="toggleMobileMenu()">Contact</a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="relative z-10">
-        <!-- Hero Section -->
-        <header id="home" class="min-h-screen flex flex-col items-center justify-center text-center p-4 sm:p-6 animate__animated animate__fadeIn">
-            <h1 class="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500">
-                Apps That Inspire
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+        <!-- Canvas Background -->
+        <div id="canvas-container">
+            <canvas id="neural-network"></canvas>
+        </div>
+        
+        <!-- Background Gradients -->
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-brand-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm animate-fade-in-up">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                <span class="text-sm font-medium text-slate-300">Available on iOS & Android</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tight mb-6 leading-tight">
+                Igniting Minds through <br/>
+                <span class="text-gradient">Intelligent Code</span>
             </h1>
-            <p class="text-base sm:text-lg md:text-xl max-w-xl text-gray-600 animate__animated animate__fadeInUp animate__delay-1s">
-                Discover a collection of beautifully crafted applications designed to make your life easier and more enjoyable.
+            
+            <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-400 font-light mb-10">
+                CodeCerebrum specializes in crafting high-performance educational and trivia applications designed to challenge your intellect and entertain.
             </p>
-        </header>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#apps" class="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-brand-500/30 transition-all hover:scale-105 flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-google-play"></i> Explore Apps
+                </a>
+                <a href="#about" class="px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold text-lg border border-white/10 backdrop-blur-sm transition-all hover:scale-105 flex items-center justify-center gap-2">
+                    Learn More <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
 
-        <!-- About Section -->
-        <section id="about" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 animate__animated animate__fadeInUp">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">About Us</h2>
-                <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
-                    Code Cerebrum is dedicated to crafting engaging and innovative applications that enhance everyday experiences. Our team combines technical expertise with creative vision to deliver software solutions that are reliable, user-friendly, and enjoyable. Explore our portfolio to see how we bring ideas to life.
+            <!-- Stats -->
+            <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-10">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-1 counter" data-target="50">0</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wider">Apps Live</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-1 counter" data-target="100000">0</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wider">Downloads</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-1">4.8</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wider">Avg Rating</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-white mb-1">24/7</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wider">Learning</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-slate-900 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+                <div class="mb-12 lg:mb-0 relative">
+                    <!-- Decorative visuals -->
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-brand-500/20 rounded-full blur-3xl"></div>
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                         <!-- Placeholder for a high tech image concept -->
+                        <div class="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center p-8">
+                            <i class="fa-solid fa-microchip text-9xl text-white/5"></i>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fa-solid fa-puzzle-piece text-5xl text-brand-500 mb-4 animate-float"></i>
+                                    <h3 class="text-2xl font-bold text-white">Gamified Learning</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h2 class="text-brand-500 font-bold tracking-wide uppercase text-sm mb-2">About CodeCerebrum</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold text-white mb-6">Bridging Entertainment <br/>& Education</h3>
+                    <p class="text-slate-400 mb-6 text-lg leading-relaxed">
+                        We believe that learning shouldn't be boring. At CodeCerebrum, we fuse cutting-edge technology with engaging gameplay mechanics to create apps that test your knowledge and sharpen your mind.
+                    </p>
+                    <p class="text-slate-400 mb-8 text-lg leading-relaxed">
+                        From regional cinema trivia to complex data analytics challenges, our portfolio covers a spectrum of interests, ensuring there's something for every curious mind.
+                    </p>
+                    
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-check text-xs text-green-500"></i>
+                            </div>
+                            <span class="ml-3 text-slate-300">Clean, User-Friendly Interfaces</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-check text-xs text-green-500"></i>
+                            </div>
+                            <span class="ml-3 text-slate-300">Regular Content Updates</span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-check text-xs text-green-500"></i>
+                            </div>
+                            <span class="ml-3 text-slate-300">Cross-Platform Availability</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apps Showcase Section -->
+    <section id="apps" class="py-24 bg-slate-950 relative overflow-hidden">
+        <!-- Background grid pattern -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%231e293b\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-brand-500 font-bold tracking-wide uppercase text-sm">Portfolio</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-white mt-2 mb-4">Our Featured Apps</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">Dive into our diverse collection of games and educational tools.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- App 1: Malayalam Movies -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col h-full group">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-emerald-700 flex items-center justify-center mb-6 shadow-lg shadow-green-500/20 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-clapperboard text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Guess Malayalam Movies</h3>
+                    <p class="text-slate-400 text-sm mb-6 flex-grow">
+                        Test your knowledge of Mollywood! From classics to new releases, identify the movie from minimal clues.
+                    </p>
+                    <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                        <div class="flex gap-2">
+                            <i class="fa-brands fa-apple text-slate-400 hover:text-white cursor-pointer"></i>
+                            <i class="fa-brands fa-android text-slate-400 hover:text-white cursor-pointer"></i>
+                        </div>
+                        <span class="text-green-400 text-xs font-bold uppercase tracking-wider">Trivia</span>
+                    </div>
+                </div>
+
+                <!-- App 2: Bollywood Movies -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col h-full group">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center mb-6 shadow-lg shadow-pink-500/20 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-film text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Guess Bollywood Movies</h3>
+                    <p class="text-slate-400 text-sm mb-6 flex-grow">
+                        Are you a true Bollywood fan? Identify the blockbusters and hidden gems of Hindi cinema.
+                    </p>
+                    <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                        <div class="flex gap-2">
+                            <i class="fa-brands fa-apple text-slate-400 hover:text-white cursor-pointer"></i>
+                            <i class="fa-brands fa-android text-slate-400 hover:text-white cursor-pointer"></i>
+                        </div>
+                        <span class="text-pink-400 text-xs font-bold uppercase tracking-wider">Trivia</span>
+                    </div>
+                </div>
+
+                <!-- App 3: Python Quiz -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col h-full group">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-python text-white text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Python Quiz</h3>
+                    <p class="text-slate-400 text-sm mb-6 flex-grow">
+                        Level up your coding skills. Questions ranging from syntax basics to advanced algorithms.
+                    </p>
+                    <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                        <div class="flex gap-2">
+                            <i class="fa-brands fa-apple text-slate-400 hover:text-white cursor-pointer"></i>
+                            <i class="fa-brands fa-android text-slate-400 hover:text-white cursor-pointer"></i>
+                        </div>
+                        <span class="text-blue-400 text-xs font-bold uppercase tracking-wider">Education</span>
+                    </div>
+                </div>
+
+                <!-- App 4: Data Science -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col h-full group">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center mb-6 shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-chart-pie text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Data Science & Analytics</h3>
+                    <p class="text-slate-400 text-sm mb-6 flex-grow">
+                        Master the world of Big Data. Quizzes on Statistics, SQL, Machine Learning models, and visualization.
+                    </p>
+                    <div class="flex items-center justify-between pt-4 border-t border-white/5">
+                        <div class="flex gap-2">
+                            <i class="fa-brands fa-apple text-slate-400 hover:text-white cursor-pointer"></i>
+                            <i class="fa-brands fa-android text-slate-400 hover:text-white cursor-pointer"></i>
+                        </div>
+                        <span class="text-purple-400 text-xs font-bold uppercase tracking-wider">Tech</span>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="mt-16 text-center">
+                <p class="text-slate-400 mb-6">And many more apps in the pipeline...</p>
+                <div class="flex justify-center space-x-4">
+                     <button class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:bg-white hover:text-slate-900 transition-all">
+                        <a href="https://apps.apple.com/vn/developer/shameel-abid/id1815213704" target="_blank" class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:bg-white hover:text-slate-900 transition-all">
+                            <i class="fa-brands fa-app-store-ios text-xl"></i>
+                        </a>
+                     </button>
+                     <button class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:bg-white hover:text-slate-900 transition-all">
+                        <a href="https://play.google.com/store/apps/dev?id=6918327358369392585&hl" target="_blank" class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-slate-400 hover:bg-white hover:text-slate-900 transition-all">
+                            <i class="fa-brands fa-google-play text-xl"></i>
+                        </a>
+                     </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action / Contact -->
+    <section id="contact" class="py-24 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-card rounded-3xl p-8 md:p-12 text-center border-t border-brand-500/30">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Collaborate?</h2>
+                <p class="text-slate-400 mb-10 max-w-xl mx-auto">
+                    Have an idea for the next big trivia game? Or need a custom educational app? Let's build the future together.
                 </p>
-            </div>
-        </section>
-
-        <!-- Skills Section -->
-        <section id="skills" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-100 animate__animated animate__fadeInUp">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
-                    My Skills
-                </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8" id="skills-grid"></div>
-            </div>
-        </section>
-
-        <!-- Apps Section -->
-        <section id="apps" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 animate__animated animate__fadeInUp">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
-                    Our Apps
-                </h2>
-                <!-- Tab Navigation -->
-                <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-12" id="tab-navigation"></div>
-                <!-- Tab Contents -->
-                <div class="tab-contents" id="tab-contents"></div>
-            </div>
-        </section>
-
-        <!-- Testimonials Section -->
-        <section id="testimonials" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-100 to-white animate__animated animate__fadeInUp">
-            <div class="max-w-4xl mx-auto">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-                    What Users Say
-                </h2>
-                <div class="relative">
-                    <div id="testimonial-carousel" class="flex overflow-hidden justify-center">
-                        <div class="testimonial-card p-6 sm:p-8 text-center w-full sm:w-96 transition-all duration-500 active">
-                            <img src="https://placehold.co/80x80/FF5722/FFFFFF?text=PS" alt="User Avatar" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
-                            <div class="flex justify-center mb-4">
-                                <span class="text-yellow-400 text-sm sm:text-base">★★★★★</span>
-                            </div>
-                            <p class="text-gray-600 italic mb-4 text-sm sm:text-lg">"Guess Bollywood Movies is so addictive! Perfect for movie buffs!"</p>
-                            <h3 class="text-lg sm:text-xl font-semibold">Priya S.</h3>
-                            <p class="text-gray-500 text-sm sm:text-base">Movie Enthusiast</p>
-                        </div>
-                        <div class="testimonial-card p-6 sm:p-8 text-center w-full sm:w-96 transition-all duration-500">
-                            <img src="https://placehold.co/80x80/7E57C2/FFFFFF?text=AK" alt="User Avatar" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
-                            <div class="flex justify-center mb-4">
-                                <span class="text-yellow-400 text-sm sm:text-base">★★★★★</span>
-                            </div>
-                            <p class="text-gray-600 italic mb-4 text-sm sm:text-lg">"The Python Quiz helped me ace my coding interviews!"</p>
-                            <h3 class="text-lg sm:text-xl font-semibold">Arjun K.</h3>
-                            <p class="text-gray-500 text-sm sm:text-base">Software Developer</p>
-                        </div>
-                        <div class="testimonial-card p-6 sm:p-8 text-center w-full sm:w-96 transition-all duration-500">
-                            <img src="https://placehold.co/80x80/3F51B5/FFFFFF?text=MR" alt="User Avatar" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
-                            <div class="flex justify-center mb-4">
-                                <span class="text-yellow-400 text-sm sm:text-base">★★★★★</span>
-                            </div>
-                            <p class="text-gray-600 italic mb-4 text-sm sm:text-lg">"Footy Master is a must-have for football fans. Brilliant app!"</p>
-                            <h3 class="text-lg sm:text-xl font-semibold">Michael R.</h3>
-                            <p class="text-gray-500 text-sm sm:text-base">Sports Fan</p>
-                        </div>
+                
+                <form onsubmit="event.preventDefault(); alert('Thank you for reaching out! We will get back to you soon.');" class="max-w-md mx-auto space-y-4">
+                    <div class="relative">
+                        <input type="email" placeholder="Enter your email address" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                        <button type="submit" class="absolute right-2 top-2 bottom-2 bg-brand-600 hover:bg-brand-500 text-white px-6 rounded-lg font-medium transition-colors">
+                            Send
+                        </button>
                     </div>
-                    <div class="flex justify-between mt-6">
-                        <button class="testimonial-arrow left" data-direction="prev"><i class="fas fa-chevron-left"></i></button>
-                        <button class="testimonial-arrow right" data-direction="next"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Section -->
-        <section id="stats" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 animate__animated animate__fadeInUp">
-            <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center">
-                <div>
-                    <i class="fas fa-download text-2xl sm:text-3xl text-pink-500 mb-4"></i>
-                    <div class="count-up mb-4" data-count="100000">0</div>
-                    <p class="text-base sm:text-lg font-semibold">App Downloads</p>
-                </div>
-                <div>
-                    <i class="fas fa-users text-2xl sm:text-3xl text-purple-500 mb-4"></i>
-                    <div class="count-up mb-4" data-count="50000">0</div>
-                    <p class="text-base sm:text-lg font-semibold">Active Users</p>
-                </div>
-                <div>
-                    <i class="fas fa-mobile-alt text-2xl sm:text-3xl text-blue-500 mb-4"></i>
-                    <div class="count-up mb-4" data-count="9">0</div>
-                    <p class="text-base sm:text-lg font-semibold">Apps Built</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact Us Section -->
-        <section id="contact" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-100 animate__animated animate__fadeInUp">
-            <div class="max-w-4xl mx-auto">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
-                    Contact Us
-                </h2>
-                <form id="contact-form" class="space-y-6">
-                    <div>
-                        <label for="name" class="block text-base sm:text-lg font-semibold mb-2">Name</label>
-                        <input type="text" id="name" name="name" class="form-input w-full p-3 rounded-lg text-sm sm:text-base" placeholder="Your Name" required>
-                    </div>
-                    <div>
-                        <label for="subject" class="block text-base sm:text-lg font-semibold mb-2">Subject</label>
-                        <input type="text" id="subject" name="subject" class="form-input w-full p-3 rounded-lg text-sm sm:text-base" placeholder="Subject" required>
-                    </div>
-                    <div>
-                        <label for="message" class="block text-base sm:text-lg font-semibold mb-2">Message</label>
-                        <textarea id="message" name="message" class="form-input w-full p-3 rounded-lg h-24 sm:h-32 text-sm sm:text-base" placeholder="Your Message" required></textarea>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="cta-button bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full transition text-sm sm:text-base">Send Message</button>
-                    </div>
+                    <p class="text-xs text-slate-500">We respect your privacy. No spam.</p>
                 </form>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Footer -->
-        <footer class="py-8 px-4 bg-gradient-to-t from-gray-100 to-white">
-            <div class="max-w-6xl mx-auto text-center">
-                <p class="text-gray-600 mb-4 text-sm sm:text-base">© 2025 Code Cerebrum. All rights reserved.</p>
-                <div class="flex justify-center gap-4 mb-4">
-                    <a href="#" class="text-gray-600 hover:text-pink-500 text-sm sm:text-base"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                </div>
-                <div class="max-w-md mx-auto">
-                    <p class="text-gray-600 mb-2 text-sm sm:text-base">Subscribe to my newsletter</p>
-                    <div class="flex">
-                        <input type="email" placeholder="Enter your email" class="flex-grow p-2 rounded-l-full border border-gray-300 text-sm sm:text-base">
-                        <button class="bg-pink-500 text-white p-2 rounded-r-full hover:bg-pink-600 text-sm sm:text-base">Subscribe</button>
+    <!-- Footer -->
+    <footer class="bg-slate-950 py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-8 md:mb-0">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-brand-600 rounded flex items-center justify-center text-white text-sm">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white font-mono">CodeCerebrum</span>
                     </div>
+                    <p class="text-slate-500 text-sm max-w-xs">
+                        Building the next generation of intelligent mobile experiences.
+                    </p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-slate-400 hover:text-brand-400 transition-colors"><i class="fa-brands fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-brand-400 transition-colors"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-brand-400 transition-colors"><i class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-brand-400 transition-colors"><i class="fa-brands fa-github text-xl"></i></a>
                 </div>
             </div>
-        </footer>
-    </div>
+            <div class="mt-8 pt-8 border-t border-white/5 text-center md:text-left text-slate-600 text-sm">
+                &copy; 2025 CodeCerebrum. All rights reserved. Kochi, India.
+            </div>
+        </div>
+    </footer>
 
+    <!-- Scripts -->
     <script>
-        // App Data
-        const apps = [
-            {
-                type: "Trivia",
-                title: "Guess Malayalam Movies",
-                description: "Test your knowledge of Malayalam cinema with this fun trivia game featuring classic and modern films.",
-                coverImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/FF5722/FFFFFF?text=MM"
-            },
-            {
-                type: "Trivia",
-                title: "Guess Bollywood Movies",
-                description: "Challenge your knowledge of Bollywood films from the golden era to the latest blockbusters.",
-                coverImage: "https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/9C27B0/FFFFFF?text=BM"
-            },
-            {
-                type: "Quiz",
-                title: "Python Quiz",
-                description: "Master Python, Django and Machine Learning with Fun Quizzes and Challenges!",
-                coverImage: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/7E57C2/FFFFFF?text=PY"
-            },
-            {
-                type: "Quiz",
-                title: "HTML, CSS, JS Quiz",
-                description: "Test your frontend development skills with quizzes on HTML, CSS, and JavaScript.",
-                coverImage: "https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/2196F3/FFFFFF?text=WD"
-            },
-            {
-                type: "Quiz",
-                title: "Accounting Quiz",
-                description: "Learn accounting principles and test your knowledge with this comprehensive quiz app.",
-                coverImage: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/4CAF50/FFFFFF?text=AC"
-            },
-            {
-                type: "Quiz",
-                title: "Science Quiz",
-                description: "Explore the wonders of science with quizzes on physics, chemistry, biology and more.",
-                coverImage: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/FF9800/FFFFFF?text=SC"
-            },
-            {
-                type: "Sports",
-                title: "Footy Master",
-                description: "The ultimate football trivia app for soccer fans. Test your knowledge of leagues, players and history.",
-                coverImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/3F51B5/FFFFFF?text=FM"
-            },
-            {
-                type: "Other",
-                title: "Hangman Clash",
-                description: "The classic word game with a competitive twist. Challenge friends or play against AI.",
-                coverImage: "https://images.unsplash.com/photo-1560857793-8e6a6f8e8b0d?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/E91E63/FFFFFF?text=HC"
-            },
-            {
-                type: "Other",
-                title: "Kodeeshwaran",
-                description: "A unique puzzle game that challenges your problem-solving skills with coding-inspired challenges.",
-                coverImage: "https://images.unsplash.com/photo-1551033406-611cf9a28f67?auto=format&fit=crop&w=600&q=80",
-                icon: "https://placehold.co/100x100/009688/FFFFFF?text=KW"
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('glass', 'shadow-lg');
+                navbar.classList.remove('py-4');
+                navbar.classList.add('py-2');
+            } else {
+                navbar.classList.remove('glass', 'shadow-lg');
+                navbar.classList.remove('py-2');
+                navbar.classList.add('py-4');
             }
-        ];
-
-        // Skills Data
-        const skills = [
-            {
-                name: "JavaScript",
-                progress: 90
-            },
-            {
-                name: "Python",
-                progress: 85
-            },
-            {
-                name: "React",
-                progress: 80
-            },
-            {
-                name: "UI/UX Design",
-                progress: 75
-            },
-            {
-                name: "Node.js",
-                progress: 70
-            },
-            {
-                name: "SQL",
-                progress: 65
-            }
-        ];
-
-        // Function to generate random color
-        function generateRandomColor() {
-            const colors = [
-                'blue-500', 'green-500', 'purple-500', 'pink-500', 'red-500',
-                'yellow-500', 'teal-500', 'indigo-500', 'cyan-500', 'orange-500'
-            ];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        // Function to generate random gradient
-        function generateRandomGradient() {
-            const colors = [
-                'pink-500', 'red-500', 'yellow-500', 'green-500', 'blue-500',
-                'purple-500', 'orange-500', 'teal-500', 'indigo-500', 'cyan-500'
-            ];
-            const color1 = colors[Math.floor(Math.random() * colors.length)];
-            let color2 = colors[Math.floor(Math.random() * colors.length)];
-            let color3 = colors[Math.floor(Math.random() * colors.length)];
-            
-            while (color2 === color1) {
-                color2 = colors[Math.floor(Math.random() * colors.length)];
-            }
-            while (color3 === color1 || color3 === color2) {
-                color3 = colors[Math.floor(Math.random() * colors.length)];
-            }
-            
-            return `from-${color1} via-${color2} to-${color3}`;
-        }
-
-        // Dynamically Generate Skills
-        function generateSkills() {
-            const skillsGrid = document.getElementById('skills-grid');
-            skills.forEach(skill => {
-                const color = generateRandomColor();
-                const skillItem = document.createElement('div');
-                skillItem.className = 'progress-item';
-                skillItem.innerHTML = `
-                    <h3 class="text-lg sm:text-xl font-semibold mb-2">${skill.name}</h3>
-                    <div class="progress-bar">
-                        <div class="progress-bar-fill bg-${color}" style="width: 0%;" data-progress="${skill.progress}"></div>
-                    </div>
-                `;
-                skillsGrid.appendChild(skillItem);
-            });
-        }
-
-        // Dynamically Generate Tabs and Content
-        function generateTabsAndContent() {
-            const tabNavigation = document.getElementById('tab-navigation');
-            const tabContents = document.getElementById('tab-contents');
-
-            // Get unique app types
-            const appTypes = [...new Set(apps.map(app => app.type))];
-
-            // Generate tab buttons
-            appTypes.forEach((type, index) => {
-                const button = document.createElement('button');
-                button.className = `tab-button px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-lg ${index === 0 ? 'active' : ''}`;
-                button.setAttribute('data-tab', type.toLowerCase().replace(/\s+/g, '-'));
-                button.textContent = type;
-                tabNavigation.appendChild(button);
-            });
-
-            // Generate tab contents
-            appTypes.forEach(type => {
-                const tabContent = document.createElement('div');
-                tabContent.id = type.toLowerCase().replace(/\s+/g, '-');
-                tabContent.className = `tab-content ${type === appTypes[0] ? 'active' : ''} animate__animated animate__fadeInUp`;
-                
-                const grid = document.createElement('div');
-                const cols = type === 'Sports' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2';
-                grid.className = `grid ${cols} gap-6 sm:gap-12`;
-
-                // Filter apps by type
-                const typeApps = apps.filter(app => app.type === type);
-                typeApps.forEach(app => {
-                    const gradient = generateRandomGradient();
-                    const appCard = document.createElement('div');
-                    appCard.className = 'app-card p-4 sm:p-6 flex flex-col items-center text-center relative overflow-hidden group';
-                    appCard.innerHTML = `
-                        <div class="absolute inset-0 w-full h-32 sm:h-40 rounded-t-2xl overflow-hidden">
-                            <img src="${app.coverImage}" alt="${app.title} Cover" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-500">
-                        </div>
-                        <div class="relative z-10 mt-24 sm:mt-32 mb-4">
-                            <img src="${app.icon}" alt="${app.title} Icon" class="w-16 sm:w-24 h-16 sm:h-24 rounded-full shadow-lg border-4 border-white mx-auto">
-                        </div>
-                        <h3 class="text-lg sm:text-2xl font-bold mb-2 mt-2 bg-clip-text text-transparent bg-gradient-to-r ${gradient}">
-                            ${app.title}
-                        </h3>
-                        <p class="text-gray-600 mb-4 text-sm sm:text-base">${app.description}</p>
-                        <div class="flex space-x-2 sm:space-x-4 mt-auto z-10">
-                            <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-full transition duration-300 shadow-md text-sm sm:text-base">App Store</a>
-                            <a href="#" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-full transition duration-300 shadow-md text-sm sm:text-base">Google Play</a>
-                        </div>
-                    `;
-                    grid.appendChild(appCard);
-                });
-
-                tabContent.appendChild(grid);
-                tabContents.appendChild(tabContent);
-            });
-
-            // Tab functionality
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                    
-                    button.classList.add('active');
-                    const tabId = button.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-        }
-
-        // Smooth Scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-                // Close mobile menu if open
-                document.querySelector('.nav-links').classList.remove('active');
-                document.querySelector('.hamburger').innerHTML = '<i class="fas fa-bars"></i>';
-            });
         });
 
-        // Hamburger Menu Toggle
-        document.querySelector('.hamburger').addEventListener('click', () => {
-            const navLinks = document.querySelector('.nav-links');
-            navLinks.classList.toggle('active');
-            const hamburger = document.querySelector('.hamburger');
-            hamburger.innerHTML = navLinks.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-        });
-
-        // Progress Bar Animation
-        function animateProgressBars() {
-            const progressBars = document.querySelectorAll('.progress-bar-fill');
-            progressBars.forEach(bar => {
-                const progress = bar.getAttribute('data-progress');
-                setTimeout(() => {
-                    bar.style.width = `${progress}%`;
-                }, 500);
-            });
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
         }
 
-        // Count-Up Animation
-        function animateCountUp() {
-            const counters = document.querySelectorAll('.count-up');
+        // Animated Counters
+        const counters = document.querySelectorAll('.counter');
+        let hasAnimated = false;
+
+        const animateCounters = () => {
             counters.forEach(counter => {
-                const target = +counter.getAttribute('data-count');
-                let count = 0;
-                const baseSpeed = 1000;
-                const speed = target <= 10 ? baseSpeed / 50 : baseSpeed / target;
-                const updateCount = () => {
-                    const inc = target / 200;
-                    count += inc;
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count).toLocaleString();
-                        setTimeout(updateCount, speed);
+                const target = +counter.getAttribute('data-target');
+                const count = +counter.innerText;
+                const increment = target / 200;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(animateCounters, 10);
+                } else {
+                    // Format big numbers
+                    if(target > 1000) {
+                        counter.innerText = (target / 1000).toFixed(0) + 'K+';
                     } else {
-                        counter.innerText = target.toLocaleString();
+                        counter.innerText = target + '+';
                     }
-                };
-                updateCount();
+                }
             });
-        }
+        };
 
-        // Testimonial Carousel
-        function initTestimonialCarousel() {
-            const carousel = document.getElementById('testimonial-carousel');
-            const cards = carousel.querySelectorAll('.testimonial-card');
-            const arrows = document.querySelectorAll('.testimonial-arrow');
-            let currentIndex = 0;
-
-            function showCard(index) {
-                cards.forEach((card, i) => {
-                    card.classList.toggle('active', i === index);
-                    card.style.display = i === index ? 'block' : 'none';
-                });
+        // Trigger animation when stats section is in view
+        const observer = new IntersectionObserver((entries) => {
+            if(entries[0].isIntersecting && !hasAnimated) {
+                animateCounters();
+                hasAnimated = true;
             }
+        });
+        
+        // Find a parent container of counters to observe
+        const statsSection = document.querySelector('.counter').parentElement.parentElement;
+        observer.observe(statsSection);
 
-            arrows.forEach(arrow => {
-                arrow.addEventListener('click', () => {
-                    const direction = arrow.getAttribute('data-direction');
-                    if (direction === 'prev') {
-                        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-                    } else {
-                        currentIndex = (currentIndex + 1) % cards.length;
-                    }
-                    showCard(currentIndex);
-                });
-            });
 
-            showCard(currentIndex);
-        }
+        // --- Neural Network Canvas Animation ---
+        const canvas = document.getElementById('neural-network');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Configuration
+        const particleCount = 60; // Number of nodes
+        const connectionDistance = 150; // Distance to draw lines
+        const mouseDistance = 200; // Interaction radius
 
-        // Contact Form Submission
-        document.getElementById('contact-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
-            const mailtoLink = `mailto:codecerebrum@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name}\n\n${message}`)}`;
-            window.location.href = mailtoLink;
-            this.reset();
+        let mouse = { x: null, y: null };
+
+        window.addEventListener('mousemove', (e) => {
+            // Adjust for canvas position relative to viewport
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
         });
 
-        // Scroll-triggered Animations
-        function handleScrollAnimations() {
-            const elements = document.querySelectorAll('.animate__animated');
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animate__fadeInUp');
-                        if (entry.target.id === 'skills') {
-                            animateProgressBars();
-                        }
-                        if (entry.target.id === 'stats') {
-                            animateCountUp();
-                        }
-                    }
-                });
-            }, { threshold: 0.2 });
+        window.addEventListener('resize', resize);
 
-            elements.forEach(element => observer.observe(element));
+        function resize() {
+            width = canvas.width = document.getElementById('canvas-container').offsetWidth;
+            height = canvas.height = document.getElementById('canvas-container').offsetHeight;
+            initParticles();
         }
 
-        // Parallax Effect
-        const layer1 = document.getElementById('layer-1');
-        let lastScrollY = 0;
-        let scrollVelocity = 0;
-
-        function updateParallax() {
-            const scrollY = window.scrollY;
-            scrollVelocity = scrollVelocity * 0.9 + (scrollY - lastScrollY) * 0.1;
-            layer1.style.transform = `translateY(${scrollY * 0.1 + scrollVelocity}px)`;
-            lastScrollY = scrollY;
-            requestAnimationFrame(updateParallax);
-        }
-
-        // Three.js 3D Objects
-        let scene, camera, renderer, objects = [];
-        const canvas = document.getElementById('three-canvas');
-        let lastMouseX = 0, lastMouseY = 0;
-        let cameraTargetX = 0, cameraTargetY = 0;
-
-        function initThree() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-            camera.position.z = window.innerWidth < 640 ? 7 : 5;
-
-            // Add lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-            scene.add(ambientLight);
-            const pointLight = new THREE.PointLight(0xffffff, 1.5);
-            pointLight.position.set(5, 5, 5);
-            scene.add(pointLight);
-            const pointLight2 = new THREE.PointLight(0x00f2ff, 1.0);
-            pointLight2.position.set(-10, -5, -5);
-            scene.add(pointLight2);
-
-            // Create 3D objects
-            const geometries = [
-                new THREE.BoxGeometry(1, 1, 1),
-                new THREE.SphereGeometry(0.7, 32, 32),
-                new THREE.ConeGeometry(0.6, 1.2, 32),
-                new THREE.TorusGeometry(0.5, 0.2, 16, 100),
-                new THREE.IcosahedronGeometry(0.8),
-            ];
-
-            const vibrantColors = [
-                0x00ffc3, // Bright Cyan
-                0xff00ff, // Magenta
-                0x00f2ff, // Light Blue
-                0xfff000, // Yellow
-                0xff5e00, // Orange
-                0x7dff00, // Lime Green
-                0xff005d, // Bright Pink
-            ];
-
-            for (let i = 0; i < 50; i++) {
-                const geometry = geometries[Math.floor(Math.random() * geometries.length)];
-                const material = new THREE.MeshStandardMaterial({ 
-                    color: vibrantColors[Math.floor(Math.random() * vibrantColors.length)],
-                    metalness: 0.6,
-                    roughness: 0.2,
-                    emissive: 0x222222
-                });
-                const object = new THREE.Mesh(geometry, material);
-
-                object.position.x = (Math.random() - 0.5) * (window.innerWidth < 640 ? 10 : 20);
-                object.position.y = (Math.random() - 0.5) * (window.innerWidth < 640 ? 15 : 30);
-                object.position.z = (Math.random() - 0.5) * 10;
-                
-                object.rotation.x = Math.random() * 2 * Math.PI;
-                object.rotation.y = Math.random() * 2 * Math.PI;
-                
-                const scale = Math.random() * 0.5 + 0.2;
-                object.scale.set(scale, scale, scale);
-
-                object.userData = {
-                    baseY: object.position.y,
-                    floatSpeed: Math.random() * 0.02 + 0.01
-                };
-
-                scene.add(object);
-                objects.push(object);
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1.5; // Velocity X
+                this.vy = (Math.random() - 0.5) * 1.5; // Velocity Y
+                this.size = Math.random() * 2 + 1;
+                // Randomly pick blue or purple hue for dots
+                this.color = Math.random() > 0.5 ? 'rgba(14, 165, 233,' : 'rgba(99, 102, 241,'; 
             }
 
-            animate();
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                // Mouse interaction
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouseDistance) {
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (mouseDistance - distance) / mouseDistance;
+                        const directionX = forceDirectionX * force * 2;
+                        const directionY = forceDirectionY * force * 2;
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + '0.8)';
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
         }
 
         function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // Draw connections
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        // Opacity based on distance
+                        let opacity = 1 - (distance / connectionDistance);
+                        ctx.strokeStyle = 'rgba(100, 116, 139,' + (opacity * 0.3) + ')'; // Slate-500ish
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
             requestAnimationFrame(animate);
-
-            const time = Date.now() * 0.001;
-            objects.forEach(object => {
-                object.rotation.x += 0.005;
-                object.rotation.y += 0.005;
-                object.position.y = object.userData.baseY + Math.sin(time * object.userData.floatSpeed) * 0.5;
-            });
-
-            // Smooth camera movement
-            camera.position.x += (cameraTargetX - camera.position.x) * 0.1;
-            camera.position.y += (cameraTargetY - camera.position.y) * 0.1;
-
-            renderer.render(scene, camera);
         }
-
-        function onScroll() {
-            const scrollY = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = scrollY / docHeight;
-            cameraTargetY = -scrollPercent * (window.innerWidth < 640 ? 10 : 20);
-        }
-
-        function onMouseMove(event) {
-            const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-            cameraTargetX = mouseX * (window.innerWidth < 640 ? 1 : 2);
-            cameraTargetY += mouseY * (window.innerWidth < 640 ? 1 : 2);
-            lastMouseX = mouseX;
-            lastMouseY = mouseY;
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.position.z = window.innerWidth < 640 ? 7 : 5;
-        }
-
-        window.addEventListener('scroll', onScroll);
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('resize', onWindowResize);
-        requestAnimationFrame(updateParallax);
 
         // Initialize
-        generateSkills();
-        generateTabsAndContent();
-        initTestimonialCarousel();
-        handleScrollAnimations();
-        initThree();
+        resize();
+        animate();
+
     </script>
 </body>
 </html>
-
-
