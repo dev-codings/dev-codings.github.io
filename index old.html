@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Cerebrum</title>
+    <!-- Open Graph Meta Tags (for Facebook, LinkedIn, etc.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://codecerebrum.in">
+    <meta property="og:title" content="Code Cerebrum">
+    <meta property="og:description" content="Explore quiz and trivia apps">
+    <meta property="og:image" content="https://codecerebrum.in/assets/meta/og_thumbnail.jpg">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://codecerebrum.in">
+    <meta name="twitter:title" content="Code Cerebrum">
+    <meta name="twitter:description" content="Explore quiz and trivia apps">
+    <meta name="twitter:image" content="https://codecerebrum.in/assets/meta/og_thumbnail.jpg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 99, 71, 0.2), transparent 50%),
+                radial-gradient(circle at 80% 90%, rgba(60, 179, 113, 0.2), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(72, 61, 139, 0.15), transparent 60%);
+            background-color: #f5f5fa;
+        }
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            transition: transform 0.5s ease-out;
+        }
+        #layer-1 {
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
+        }
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .app-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .app-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.5), 0 0 40px rgba(139, 92, 246, 0.4);
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button.active {
+            border-bottom-color: #ec4899;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        .tab-button:hover:not(.active) {
+            border-bottom-color: rgba(236, 72, 153, 0.5);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .tab-content.active {
+            display: grid;
+        }
+        .progress-bar {
+            height: 10px;
+            border-radius: 5px;
+            background: #e5e7eb;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 1.5s ease-in-out;
+        }
+        .testimonial-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
+        }
+        .testimonial-card.active {
+            transform: scale(1);
+            opacity: 1;
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.5);
+        }
+        .testimonial-card:not(.active) {
+            transform: scale(0.9);
+            opacity: 0.6;
+        }
+        .testimonial-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ec4899;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .testimonial-arrow:hover {
+            background: #db2777;
+        }
+        .testimonial-arrow.left {
+            left: 5px;
+        }
+        .testimonial-arrow.right {
+            right: 5px;
+        }
+        .cta-button {
+            transform: perspective(500px) translateZ(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: perspective(500px) translateZ(20px);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+        }
+        .count-up {
+            font-size: 2rem sm;
+            font-size:2.5rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .form-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e5e7eb;
+            transition: border-color 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: #ec4899;
+            outline: none;
+        }
+        .hamburger {
+            display: none;
+        }
+        @media (max-width: 640px) {
+            .hamburger {
+                display: block;
+            }
+            .nav-links {
+                display: none;
+            }
+            .nav-links.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 1rem;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                z-index: 10;
+            }
+            .nav-links a {
+                padding: 0.5rem 0;
+                text-align: center;
+            }
+            .testimonial-arrow.left {
+                left: 5px;
+            }
+            .testimonial-arrow.right {
+                right: 5px;
+            }
+            .testimonial-card {
+                min-width: 100%;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-[#f5f5fa] text-[#1a1a2e]">
+
+    <!-- Parallax Background -->
+    <div class="parallax-bg">
+        <div id="layer-1" class="parallax-layer"></div>
+    </div>
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar fixed top-0 left-0 w-full z-20 py-4">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="#" class="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">Code Cerebrum</a>
+            <button class="hamburger sm:hidden text-2xl text-gray-600 focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-links hidden sm:flex sm:space-x-4">
+                <a href="#home" class="text-base sm:text-lg hover:text-pink-500 transition">Home</a>
+                <a href="#about" class="text-base sm:text-lg hover:text-pink-500 transition">About</a>
+                <a href="#skills" class="text-base sm:text-lg hover:text-pink-500 transition">Skills</a>
+                <a href="#apps" class="text-base sm:text-lg hover:text-pink-500 transition">Apps</a>
+                <a href="#testimonials" class="text-base sm:text-lg hover:text-pink-500 transition">Testimonials</a>
+                <a href="#contact" class="text-base sm:text-lg hover:text-pink-500 transition">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="relative z-10">
+        <!-- Hero Section -->
+        <header id="home" class="min-h-screen flex flex-col items-center justify-center text-center p-4 sm:p-6 animate__animated animate__fadeIn">
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500">
+                Apps That Inspire
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl max-w-xl text-gray-600 animate__animated animate__fadeInUp animate__delay-1s">
+                Discover a collection of beautifully crafted applications designed to make your life easier and more enjoyable.
+            </p>
+        </header>
+
+        <!-- About Section -->
+        <section id="about" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 animate__animated animate__fadeInUp">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">About Us</h2>
+                <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
+                    Code Cerebrum is dedicated to crafting engaging and innovative applications that enhance everyday experiences. Our team combines technical expertise with creative vision to deliver software solutions that are reliable, user-friendly, and enjoyable. Explore our portfolio to see how we bring ideas to life.
+                </p>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-100 animate__animated animate__fadeInUp">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                    My Skills
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8" id="skills-grid"></div>
+            </div>
+        </section>
+
+        <!-- Apps Section -->
+        <section id="apps" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 animate__animated animate__fadeInUp">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500">
+                    Our Apps
+                </h2>
+                <!-- Tab Navigation -->
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-12" id="tab-navigation"></div>
+                <!-- Tab Contents -->
+                <div class="tab-contents" id="tab-contents"></div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-100 to-white animate__animated animate__fadeInUp">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+                    What Users Say
+                </h2>
+                <div class="relative">
+                    <div id="testimonial-carousel" class="flex overflow-hidden justify-center">
+                        <div class="testimonial-card p-6 sm:p-8 text-center w-full sm:w-96 transition-all duration-500 active">
+                            <img src="https://placehold.co/80x80/FF5722/FFFFFF?text=PS" alt="User Avatar" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
+                            <div class="flex justify-center mb-4">
+                                <span class="text-yellow-400 text-sm sm:text-base">★★★★★</span>
+                            </div>
+                            <p class="text-gray-600 italic mb-4 text-sm sm:text-lg">"Guess Bollywood Movies is so addictive! Perfect for movie buffs!"</p>
+                            <h3 class="text-lg sm:text-xl font-semibold">Priya S.</h3>
+                            <p class="text-gray-500 text-sm sm:text-base">Movie Enthusiast</p>
+                        </div>
+                        <div class="testimonial-card p-6 sm:p-8 text-center w-full sm:w-96 transition-all duration-500">
+                            <img src="https://placehold.co/80x80/7E57C2/FFFFFF?text=AK" alt="User Avatar" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
+                            <div class="flex justify-center mb-4">
+                                <span class="text-yellow-400 text-sm sm:text-base">★★★★★</span>
+                            </div>
+                            <p class="text-gray-600 italic mb-4 text-sm sm:text-lg">"The Python Quiz helped me ace my coding interviews!"</p>
+                            <h3 class="text-lg sm:text-xl font-semibold">Arjun K.</h3>
+                            <p class="text-gray-500 text-sm sm:text-base">Software Developer</p>
+                        </div>
+                        <div class="testimonial-card p-6 sm:p-8 text-center w-full sm:w-96 transition-all duration-500">
+                            <img src="https://placehold.co/80x80/3F51B5/FFFFFF?text=MR" alt="User Avatar" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full mx-auto mb-4 border-4 border-white shadow-lg">
+                            <div class="flex justify-center mb-4">
+                                <span class="text-yellow-400 text-sm sm:text-base">★★★★★</span>
+                            </div>
+                            <p class="text-gray-600 italic mb-4 text-sm sm:text-lg">"Footy Master is a must-have for football fans. Brilliant app!"</p>
+                            <h3 class="text-lg sm:text-xl font-semibold">Michael R.</h3>
+                            <p class="text-gray-500 text-sm sm:text-base">Sports Fan</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-6">
+                        <button class="testimonial-arrow left" data-direction="prev"><i class="fas fa-chevron-left"></i></button>
+                        <button class="testimonial-arrow right" data-direction="next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 animate__animated animate__fadeInUp">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center">
+                <div>
+                    <i class="fas fa-download text-2xl sm:text-3xl text-pink-500 mb-4"></i>
+                    <div class="count-up mb-4" data-count="100000">0</div>
+                    <p class="text-base sm:text-lg font-semibold">App Downloads</p>
+                </div>
+                <div>
+                    <i class="fas fa-users text-2xl sm:text-3xl text-purple-500 mb-4"></i>
+                    <div class="count-up mb-4" data-count="50000">0</div>
+                    <p class="text-base sm:text-lg font-semibold">Active Users</p>
+                </div>
+                <div>
+                    <i class="fas fa-mobile-alt text-2xl sm:text-3xl text-blue-500 mb-4"></i>
+                    <div class="count-up mb-4" data-count="9">0</div>
+                    <p class="text-base sm:text-lg font-semibold">Apps Built</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Us Section -->
+        <section id="contact" class="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-100 animate__animated animate__fadeInUp">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                    Contact Us
+                </h2>
+                <form id="contact-form" class="space-y-6">
+                    <div>
+                        <label for="name" class="block text-base sm:text-lg font-semibold mb-2">Name</label>
+                        <input type="text" id="name" name="name" class="form-input w-full p-3 rounded-lg text-sm sm:text-base" placeholder="Your Name" required>
+                    </div>
+                    <div>
+                        <label for="subject" class="block text-base sm:text-lg font-semibold mb-2">Subject</label>
+                        <input type="text" id="subject" name="subject" class="form-input w-full p-3 rounded-lg text-sm sm:text-base" placeholder="Subject" required>
+                    </div>
+                    <div>
+                        <label for="message" class="block text-base sm:text-lg font-semibold mb-2">Message</label>
+                        <textarea id="message" name="message" class="form-input w-full p-3 rounded-lg h-24 sm:h-32 text-sm sm:text-base" placeholder="Your Message" required></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="cta-button bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full transition text-sm sm:text-base">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-8 px-4 bg-gradient-to-t from-gray-100 to-white">
+            <div class="max-w-6xl mx-auto text-center">
+                <p class="text-gray-600 mb-4 text-sm sm:text-base">© 2025 Code Cerebrum. All rights reserved.</p>
+                <div class="flex justify-center gap-4 mb-4">
+                    <a href="#" class="text-gray-600 hover:text-pink-500 text-sm sm:text-base"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+                <div class="max-w-md mx-auto">
+                    <p class="text-gray-600 mb-2 text-sm sm:text-base">Subscribe to my newsletter</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Enter your email" class="flex-grow p-2 rounded-l-full border border-gray-300 text-sm sm:text-base">
+                        <button class="bg-pink-500 text-white p-2 rounded-r-full hover:bg-pink-600 text-sm sm:text-base">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // App Data
+        const apps = [
+            {
+                type: "Trivia",
+                title: "Guess Malayalam Movies",
+                description: "Test your knowledge of Malayalam cinema with this fun trivia game featuring classic and modern films.",
+                coverImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/FF5722/FFFFFF?text=MM"
+            },
+            {
+                type: "Trivia",
+                title: "Guess Bollywood Movies",
+                description: "Challenge your knowledge of Bollywood films from the golden era to the latest blockbusters.",
+                coverImage: "https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/9C27B0/FFFFFF?text=BM"
+            },
+            {
+                type: "Quiz",
+                title: "Python Quiz",
+                description: "Master Python, Django and Machine Learning with Fun Quizzes and Challenges!",
+                coverImage: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/7E57C2/FFFFFF?text=PY"
+            },
+            {
+                type: "Quiz",
+                title: "HTML, CSS, JS Quiz",
+                description: "Test your frontend development skills with quizzes on HTML, CSS, and JavaScript.",
+                coverImage: "https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/2196F3/FFFFFF?text=WD"
+            },
+            {
+                type: "Quiz",
+                title: "Accounting Quiz",
+                description: "Learn accounting principles and test your knowledge with this comprehensive quiz app.",
+                coverImage: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/4CAF50/FFFFFF?text=AC"
+            },
+            {
+                type: "Quiz",
+                title: "Science Quiz",
+                description: "Explore the wonders of science with quizzes on physics, chemistry, biology and more.",
+                coverImage: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/FF9800/FFFFFF?text=SC"
+            },
+            {
+                type: "Sports",
+                title: "Footy Master",
+                description: "The ultimate football trivia app for soccer fans. Test your knowledge of leagues, players and history.",
+                coverImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/3F51B5/FFFFFF?text=FM"
+            },
+            {
+                type: "Other",
+                title: "Hangman Clash",
+                description: "The classic word game with a competitive twist. Challenge friends or play against AI.",
+                coverImage: "https://images.unsplash.com/photo-1560857793-8e6a6f8e8b0d?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/E91E63/FFFFFF?text=HC"
+            },
+            {
+                type: "Other",
+                title: "Kodeeshwaran",
+                description: "A unique puzzle game that challenges your problem-solving skills with coding-inspired challenges.",
+                coverImage: "https://images.unsplash.com/photo-1551033406-611cf9a28f67?auto=format&fit=crop&w=600&q=80",
+                icon: "https://placehold.co/100x100/009688/FFFFFF?text=KW"
+            }
+        ];
+
+        // Skills Data
+        const skills = [
+            {
+                name: "JavaScript",
+                progress: 90
+            },
+            {
+                name: "Python",
+                progress: 85
+            },
+            {
+                name: "React",
+                progress: 80
+            },
+            {
+                name: "UI/UX Design",
+                progress: 75
+            },
+            {
+                name: "Node.js",
+                progress: 70
+            },
+            {
+                name: "SQL",
+                progress: 65
+            }
+        ];
+
+        // Function to generate random color
+        function generateRandomColor() {
+            const colors = [
+                'blue-500', 'green-500', 'purple-500', 'pink-500', 'red-500',
+                'yellow-500', 'teal-500', 'indigo-500', 'cyan-500', 'orange-500'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Function to generate random gradient
+        function generateRandomGradient() {
+            const colors = [
+                'pink-500', 'red-500', 'yellow-500', 'green-500', 'blue-500',
+                'purple-500', 'orange-500', 'teal-500', 'indigo-500', 'cyan-500'
+            ];
+            const color1 = colors[Math.floor(Math.random() * colors.length)];
+            let color2 = colors[Math.floor(Math.random() * colors.length)];
+            let color3 = colors[Math.floor(Math.random() * colors.length)];
+            
+            while (color2 === color1) {
+                color2 = colors[Math.floor(Math.random() * colors.length)];
+            }
+            while (color3 === color1 || color3 === color2) {
+                color3 = colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            return `from-${color1} via-${color2} to-${color3}`;
+        }
+
+        // Dynamically Generate Skills
+        function generateSkills() {
+            const skillsGrid = document.getElementById('skills-grid');
+            skills.forEach(skill => {
+                const color = generateRandomColor();
+                const skillItem = document.createElement('div');
+                skillItem.className = 'progress-item';
+                skillItem.innerHTML = `
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2">${skill.name}</h3>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill bg-${color}" style="width: 0%;" data-progress="${skill.progress}"></div>
+                    </div>
+                `;
+                skillsGrid.appendChild(skillItem);
+            });
+        }
+
+        // Dynamically Generate Tabs and Content
+        function generateTabsAndContent() {
+            const tabNavigation = document.getElementById('tab-navigation');
+            const tabContents = document.getElementById('tab-contents');
+
+            // Get unique app types
+            const appTypes = [...new Set(apps.map(app => app.type))];
+
+            // Generate tab buttons
+            appTypes.forEach((type, index) => {
+                const button = document.createElement('button');
+                button.className = `tab-button px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-lg ${index === 0 ? 'active' : ''}`;
+                button.setAttribute('data-tab', type.toLowerCase().replace(/\s+/g, '-'));
+                button.textContent = type;
+                tabNavigation.appendChild(button);
+            });
+
+            // Generate tab contents
+            appTypes.forEach(type => {
+                const tabContent = document.createElement('div');
+                tabContent.id = type.toLowerCase().replace(/\s+/g, '-');
+                tabContent.className = `tab-content ${type === appTypes[0] ? 'active' : ''} animate__animated animate__fadeInUp`;
+                
+                const grid = document.createElement('div');
+                const cols = type === 'Sports' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2';
+                grid.className = `grid ${cols} gap-6 sm:gap-12`;
+
+                // Filter apps by type
+                const typeApps = apps.filter(app => app.type === type);
+                typeApps.forEach(app => {
+                    const gradient = generateRandomGradient();
+                    const appCard = document.createElement('div');
+                    appCard.className = 'app-card p-4 sm:p-6 flex flex-col items-center text-center relative overflow-hidden group';
+                    appCard.innerHTML = `
+                        <div class="absolute inset-0 w-full h-32 sm:h-40 rounded-t-2xl overflow-hidden">
+                            <img src="${app.coverImage}" alt="${app.title} Cover" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="relative z-10 mt-24 sm:mt-32 mb-4">
+                            <img src="${app.icon}" alt="${app.title} Icon" class="w-16 sm:w-24 h-16 sm:h-24 rounded-full shadow-lg border-4 border-white mx-auto">
+                        </div>
+                        <h3 class="text-lg sm:text-2xl font-bold mb-2 mt-2 bg-clip-text text-transparent bg-gradient-to-r ${gradient}">
+                            ${app.title}
+                        </h3>
+                        <p class="text-gray-600 mb-4 text-sm sm:text-base">${app.description}</p>
+                        <div class="flex space-x-2 sm:space-x-4 mt-auto z-10">
+                            <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-full transition duration-300 shadow-md text-sm sm:text-base">App Store</a>
+                            <a href="#" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded-full transition duration-300 shadow-md text-sm sm:text-base">Google Play</a>
+                        </div>
+                    `;
+                    grid.appendChild(appCard);
+                });
+
+                tabContent.appendChild(grid);
+                tabContents.appendChild(tabContent);
+            });
+
+            // Tab functionality
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                // Close mobile menu if open
+                document.querySelector('.nav-links').classList.remove('active');
+                document.querySelector('.hamburger').innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+
+        // Hamburger Menu Toggle
+        document.querySelector('.hamburger').addEventListener('click', () => {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+            const hamburger = document.querySelector('.hamburger');
+            hamburger.innerHTML = navLinks.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+
+        // Progress Bar Animation
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-bar-fill');
+            progressBars.forEach(bar => {
+                const progress = bar.getAttribute('data-progress');
+                setTimeout(() => {
+                    bar.style.width = `${progress}%`;
+                }, 500);
+            });
+        }
+
+        // Count-Up Animation
+        function animateCountUp() {
+            const counters = document.querySelectorAll('.count-up');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-count');
+                let count = 0;
+                const baseSpeed = 1000;
+                const speed = target <= 10 ? baseSpeed / 50 : baseSpeed / target;
+                const updateCount = () => {
+                    const inc = target / 200;
+                    count += inc;
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count).toLocaleString();
+                        setTimeout(updateCount, speed);
+                    } else {
+                        counter.innerText = target.toLocaleString();
+                    }
+                };
+                updateCount();
+            });
+        }
+
+        // Testimonial Carousel
+        function initTestimonialCarousel() {
+            const carousel = document.getElementById('testimonial-carousel');
+            const cards = carousel.querySelectorAll('.testimonial-card');
+            const arrows = document.querySelectorAll('.testimonial-arrow');
+            let currentIndex = 0;
+
+            function showCard(index) {
+                cards.forEach((card, i) => {
+                    card.classList.toggle('active', i === index);
+                    card.style.display = i === index ? 'block' : 'none';
+                });
+            }
+
+            arrows.forEach(arrow => {
+                arrow.addEventListener('click', () => {
+                    const direction = arrow.getAttribute('data-direction');
+                    if (direction === 'prev') {
+                        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                    } else {
+                        currentIndex = (currentIndex + 1) % cards.length;
+                    }
+                    showCard(currentIndex);
+                });
+            });
+
+            showCard(currentIndex);
+        }
+
+        // Contact Form Submission
+        document.getElementById('contact-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            const mailtoLink = `mailto:codecerebrum@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name}\n\n${message}`)}`;
+            window.location.href = mailtoLink;
+            this.reset();
+        });
+
+        // Scroll-triggered Animations
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('.animate__animated');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate__fadeInUp');
+                        if (entry.target.id === 'skills') {
+                            animateProgressBars();
+                        }
+                        if (entry.target.id === 'stats') {
+                            animateCountUp();
+                        }
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            elements.forEach(element => observer.observe(element));
+        }
+
+        // Parallax Effect
+        const layer1 = document.getElementById('layer-1');
+        let lastScrollY = 0;
+        let scrollVelocity = 0;
+
+        function updateParallax() {
+            const scrollY = window.scrollY;
+            scrollVelocity = scrollVelocity * 0.9 + (scrollY - lastScrollY) * 0.1;
+            layer1.style.transform = `translateY(${scrollY * 0.1 + scrollVelocity}px)`;
+            lastScrollY = scrollY;
+            requestAnimationFrame(updateParallax);
+        }
+
+        // Three.js 3D Objects
+        let scene, camera, renderer, objects = [];
+        const canvas = document.getElementById('three-canvas');
+        let lastMouseX = 0, lastMouseY = 0;
+        let cameraTargetX = 0, cameraTargetY = 0;
+
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            camera.position.z = window.innerWidth < 640 ? 7 : 5;
+
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xffffff, 1.5);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+            const pointLight2 = new THREE.PointLight(0x00f2ff, 1.0);
+            pointLight2.position.set(-10, -5, -5);
+            scene.add(pointLight2);
+
+            // Create 3D objects
+            const geometries = [
+                new THREE.BoxGeometry(1, 1, 1),
+                new THREE.SphereGeometry(0.7, 32, 32),
+                new THREE.ConeGeometry(0.6, 1.2, 32),
+                new THREE.TorusGeometry(0.5, 0.2, 16, 100),
+                new THREE.IcosahedronGeometry(0.8),
+            ];
+
+            const vibrantColors = [
+                0x00ffc3, // Bright Cyan
+                0xff00ff, // Magenta
+                0x00f2ff, // Light Blue
+                0xfff000, // Yellow
+                0xff5e00, // Orange
+                0x7dff00, // Lime Green
+                0xff005d, // Bright Pink
+            ];
+
+            for (let i = 0; i < 50; i++) {
+                const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+                const material = new THREE.MeshStandardMaterial({ 
+                    color: vibrantColors[Math.floor(Math.random() * vibrantColors.length)],
+                    metalness: 0.6,
+                    roughness: 0.2,
+                    emissive: 0x222222
+                });
+                const object = new THREE.Mesh(geometry, material);
+
+                object.position.x = (Math.random() - 0.5) * (window.innerWidth < 640 ? 10 : 20);
+                object.position.y = (Math.random() - 0.5) * (window.innerWidth < 640 ? 15 : 30);
+                object.position.z = (Math.random() - 0.5) * 10;
+                
+                object.rotation.x = Math.random() * 2 * Math.PI;
+                object.rotation.y = Math.random() * 2 * Math.PI;
+                
+                const scale = Math.random() * 0.5 + 0.2;
+                object.scale.set(scale, scale, scale);
+
+                object.userData = {
+                    baseY: object.position.y,
+                    floatSpeed: Math.random() * 0.02 + 0.01
+                };
+
+                scene.add(object);
+                objects.push(object);
+            }
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+            objects.forEach(object => {
+                object.rotation.x += 0.005;
+                object.rotation.y += 0.005;
+                object.position.y = object.userData.baseY + Math.sin(time * object.userData.floatSpeed) * 0.5;
+            });
+
+            // Smooth camera movement
+            camera.position.x += (cameraTargetX - camera.position.x) * 0.1;
+            camera.position.y += (cameraTargetY - camera.position.y) * 0.1;
+
+            renderer.render(scene, camera);
+        }
+
+        function onScroll() {
+            const scrollY = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = scrollY / docHeight;
+            cameraTargetY = -scrollPercent * (window.innerWidth < 640 ? 10 : 20);
+        }
+
+        function onMouseMove(event) {
+            const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            cameraTargetX = mouseX * (window.innerWidth < 640 ? 1 : 2);
+            cameraTargetY += mouseY * (window.innerWidth < 640 ? 1 : 2);
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.position.z = window.innerWidth < 640 ? 7 : 5;
+        }
+
+        window.addEventListener('scroll', onScroll);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('resize', onWindowResize);
+        requestAnimationFrame(updateParallax);
+
+        // Initialize
+        generateSkills();
+        generateTabsAndContent();
+        initTestimonialCarousel();
+        handleScrollAnimations();
+        initThree();
+    </script>
+</body>
+</html>
